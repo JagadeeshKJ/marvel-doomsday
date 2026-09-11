@@ -78,6 +78,7 @@ function Topbar({ onMenu, menuOpen }: TopbarProps) {
       <button className="dt-search-trigger" aria-label="Search the multiverse" onClick={() => setDialog({ type: 'search' })}><Icon name="search" size={17} /><span>Search the multiverse...</span><kbd>Ctrl K</kbd></button>
       <span className="dt-topbar-divider" />
       <button className="dt-icon-button dt-notification-button" aria-label={`Open reminders, ${reminders} active`} onClick={() => navigate('reminders')}><Icon name="bell" size={20} />{reminders > 0 && <span />}</button>
+      <button className="dt-icon-button" aria-label="Change theme" onClick={() => setDialog({ type: 'theme' })}><Icon name="palette" size={20} /></button>
       <button className="dt-topbar-avatar" onClick={() => setDialog({ type: 'profile' })} aria-label="Edit explorer profile">{preferences.name.charAt(0).toUpperCase()}<span /></button>
     </div>
   </header>
