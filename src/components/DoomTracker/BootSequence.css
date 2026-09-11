@@ -1,0 +1,231 @@
+.dt-boot-container {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at center, #010a12, #000000);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-family: 'DM Sans', monospace;
+  color: #00e5ff;
+  perspective: 1200px;
+  animation: dt-boot-fadeout 0.8s cubic-bezier(0.8, 0, 0.2, 1) 3.5s forwards;
+}
+
+.dt-hud-bg-grid {
+  position: absolute;
+  inset: -100%;
+  background-image: linear-gradient(rgba(0, 229, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 229, 255, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+  transform: rotateX(60deg) translateY(-20%);
+  animation: dt-grid-pan 10s linear infinite;
+  z-index: 1;
+}
+
+@keyframes dt-grid-pan {
+  from { transform: rotateX(60deg) translateY(0); }
+  to { transform: rotateX(60deg) translateY(50px); }
+}
+
+/* The initial bright flash */
+.dt-hud-flash {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, #fff 0%, #00e5ff 20%, transparent 70%);
+  z-index: 50;
+  animation: dt-flash-burst 0.8s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes dt-flash-burst {
+  0% { transform: scale(0); opacity: 1; filter: brightness(2) blur(10px); }
+  20% { transform: scale(2); opacity: 1; filter: brightness(1.5) blur(20px); }
+  100% { transform: scale(4); opacity: 0; filter: blur(50px); }
+}
+
+.dt-hud-wrapper {
+  position: relative;
+  width: 700px;
+  height: 700px;
+  transform-style: preserve-3d;
+  transform: rotateX(40deg) rotateY(0deg) rotateZ(0deg);
+  z-index: 10;
+  animation: dt-wrapper-expand 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards;
+}
+
+@keyframes dt-wrapper-expand {
+  0% { transform: rotateX(40deg) rotateY(0deg) rotateZ(-90deg) scale(0); opacity: 0; }
+  100% { transform: rotateX(40deg) rotateY(0deg) rotateZ(0deg) scale(1); opacity: 1; }
+}
+
+.dt-hud-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  transform-style: preserve-3d;
+  animation-fill-mode: both;
+}
+
+/* Outer thick tactical arc */
+.dt-hud-ring-1 {
+  border: 4px solid transparent;
+  border-left: 4px solid #00e5ff;
+  border-right: 4px solid #00e5ff;
+  border-top: 1px solid rgba(0, 229, 255, 0.3);
+  border-bottom: 1px solid rgba(0, 229, 255, 0.3);
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.2);
+  animation: dt-spin 8s linear infinite;
+}
+
+/* Inner scanning radar */
+.dt-hud-ring-2 {
+  inset: 20px;
+  border: 1px solid rgba(0, 229, 255, 0.1);
+  background: conic-gradient(from 0deg, transparent 0%, transparent 80%, rgba(0, 229, 255, 0.4) 100%);
+  animation: dt-spin-reverse 4s linear infinite;
+}
+
+/* Thick dashed structural ring */
+.dt-hud-ring-3 {
+  inset: 60px;
+  border: 2px dashed rgba(0, 229, 255, 0.6);
+  box-shadow: inset 0 0 15px rgba(0, 229, 255, 0.1);
+  animation: dt-spin 15s linear infinite;
+}
+
+/* Multiple thin orbital rings */
+.dt-hud-ring-4 {
+  inset: 100px;
+  border: 8px solid rgba(0, 229, 255, 0.05);
+  border-top: 8px solid rgba(0, 229, 255, 0.8);
+  border-bottom: 8px solid rgba(0, 229, 255, 0.5);
+  animation: dt-spin-reverse 5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.dt-hud-ring-5 {
+  inset: 160px;
+  border: 2px dotted #ff3d00; /* Alert red/orange */
+  animation: dt-spin 6s linear infinite;
+}
+
+/* Center core reactor */
+.dt-hud-ring-6 {
+  inset: 220px;
+  background: radial-gradient(circle, rgba(0, 229, 255, 0.15) 0%, transparent 60%);
+  border: 2px solid rgba(0, 229, 255, 0.5);
+  box-shadow: 0 0 40px rgba(0, 229, 255, 0.4), inset 0 0 40px rgba(0, 229, 255, 0.2);
+  animation: dt-pulse 1.5s ease-in-out infinite alternate;
+}
+
+.dt-hud-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateZ(120px);
+}
+
+.dt-hud-text {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 40px;
+  letter-spacing: 15px;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 0 15px #00e5ff, 0 0 30px #00e5ff, 0 0 60px #00e5ff;
+  text-transform: uppercase;
+  margin-left: 15px;
+}
+
+/* Side Panels */
+.dt-hud-side-panel {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  z-index: 20;
+  opacity: 0;
+  animation: dt-fade-in 0.5s ease-out 1s forwards;
+}
+
+.dt-hud-left-panel { left: 40px; }
+.dt-hud-right-panel { right: 40px; text-align: right; align-items: flex-end; }
+
+.dt-hud-panel-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 16px;
+  letter-spacing: 6px;
+  color: #00e5ff;
+  border-bottom: 2px solid rgba(0, 229, 255, 0.4);
+  padding-bottom: 8px;
+  width: 100%;
+}
+
+.dt-hud-logs {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 12px;
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.9);
+  display: flex;
+  flex-direction: column;
+  text-shadow: 0 0 8px rgba(0, 229, 255, 0.6);
+  text-align: left;
+}
+
+.dt-hud-log-line {
+  animation: dt-type-in 0.1s ease-out both;
+}
+
+.dt-hud-system-status {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.dt-hud-bar-container {
+  width: 100%;
+  height: 6px;
+  background: rgba(0, 229, 255, 0.1);
+  border: 1px solid rgba(0, 229, 255, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.dt-hud-bar-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: #00e5ff;
+  box-shadow: 0 0 15px #00e5ff;
+}
+
+.dt-hud-target-reticle {
+  position: absolute;
+  inset: 30px;
+  border: 1px solid rgba(0, 229, 255, 0.15);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 5;
+  animation: dt-fade-in 1s ease-out forwards;
+}
+
+.dt-hud-target-reticle::before, .dt-hud-target-reticle::after {
+  content: '';
+  position: absolute;
+  background: rgba(0, 229, 255, 0.3);
+}
+.dt-hud-target-reticle::before { top: 50%; left: -20px; right: -20px; height: 1px; }
+.dt-hud-target-reticle::after { left: 50%; top: -20px; bottom: -20px; width: 1px; }
+
+@keyframes dt-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes dt-boot-fadeout { to { opacity: 0; visibility: hidden; } }
+@keyframes dt-spin { from { transform: rotateZ(0deg); } to { transform: rotateZ(360deg); } }
+@keyframes dt-spin-reverse { from { transform: rotateZ(360deg); } to { transform: rotateZ(0deg); } }
+@keyframes dt-pulse { from { opacity: 0.5; transform: scale(0.9); } to { opacity: 1; transform: scale(1.1); } }
+@keyframes dt-type-in { from { opacity: 0; transform: translateX(-5px); } to { opacity: 1; transform: translateX(0); } }

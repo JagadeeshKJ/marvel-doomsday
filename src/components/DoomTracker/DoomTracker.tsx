@@ -6,6 +6,7 @@ import { Dashboard } from './Dashboard'
 import { NewsFeed } from './NewsFeed'
 import { CharactersPage, RemindersPage, TicketsPage, WatchlistPage } from './TrackerPages'
 import { TrackerDialogs } from './TrackerDialogs'
+import { BootSequence } from './BootSequence'
 import './DoomTracker.css'
 
 const navigation: { view: TrackerView; icon: IconName; label: string }[] = [
@@ -87,7 +88,9 @@ function Topbar({ onMenu, menuOpen }: TopbarProps) {
 export default function DoomTracker() {
   const { view, setDialog, dialog, storageError, toast, dismissToast } = useDoomTracker()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [isBooting, setIsBooting] = useState(true)
   const mainRef = useRef<HTMLElement>(null)
+  
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
@@ -106,27 +109,34 @@ export default function DoomTracker() {
     document.title = `${viewLabels[view]} | DOOM Tracker`
   }, [view])
 
-  return <div className="dt-app">
-    <a className="dt-skip-link" href="#dt-main" onClick={event => { event.preventDefault(); mainRef.current?.focus() }}>Skip to content</a>
-    <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-    <div className="dt-workspace">
-      <Topbar onMenu={() => setSidebarOpen(!sidebarOpen)} menuOpen={sidebarOpen} />
-      <main ref={mainRef} id="dt-main" className="dt-main" tabIndex={-1}>
-        {storageError && <div className="dt-storage-warning" role="alert"><Icon name="info" size={19} /><span>{storageError}</span><button onClick={() => setDialog({ type: 'profile' })}>Open profile</button></div>}
-        <div className="dt-page-heading">
-          <div><span className="dt-eyebrow dt-greeting">{view === 'overview' ? 'WELCOME TO YOUR NEXT CHAPTER' : 'YOUR UNIVERSE. YOUR WAY.'}</span><h1>{pageHeadings[view].title}</h1><p>{pageHeadings[view].description}</p></div>
-          <div className="dt-today"><Icon name="calendar" size={15} /><span>{new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date())}</span><span className="dt-today-dot" />Earth-616</div>
-        </div>
-        {view === 'overview' && <Dashboard />}
-        {view === 'news' && <NewsFeed />}
-        {view === 'watchlist' && <WatchlistPage />}
-        {view === 'characters' && <CharactersPage />}
-        {view === 'tickets' && <TicketsPage />}
-        {view === 'reminders' && <RemindersPage />}
-        <footer className="dt-footer"><span><span className="dt-footer-dot" />A little less chaos. A lot more Marvel.</span><button onClick={() => setDialog({ type: 'about' })}>An independent fan project<Icon name="upRight" size={12} /></button></footer>
-      </main>
+  const handleBootComplete = () => {
+    setIsBooting(false)
+  }
+
+  return <>
+    {isBooting && <BootSequence onComplete={handleBootComplete} />}
+    <div className="dt-app">
+      <a className="dt-skip-link" href="#dt-main" onClick={event => { event.preventDefault(); mainRef.current?.focus() }}>Skip to content</a>
+      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <div className="dt-workspace">
+        <Topbar onMenu={() => setSidebarOpen(!sidebarOpen)} menuOpen={sidebarOpen} />
+        <main ref={mainRef} id="dt-main" className="dt-main" tabIndex={-1}>
+          {storageError && <div className="dt-storage-warning" role="alert"><Icon name="info" size={19} /><span>{storageError}</span><button onClick={() => setDialog({ type: 'profile' })}>Open profile</button></div>}
+          <div className="dt-page-heading">
+            <div><span className="dt-eyebrow dt-greeting">{view === 'overview' ? 'WELCOME TO YOUR NEXT CHAPTER' : 'YOUR UNIVERSE. YOUR WAY.'}</span><h1>{pageHeadings[view].title}</h1><p>{pageHeadings[view].description}</p></div>
+            <div className="dt-today"><Icon name="calendar" size={15} /><span>{new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date())}</span><span className="dt-today-dot" />Earth-616</div>
+          </div>
+          {view === 'overview' && <Dashboard />}
+          {view === 'news' && <NewsFeed />}
+          {view === 'watchlist' && <WatchlistPage />}
+          {view === 'characters' && <CharactersPage />}
+          {view === 'tickets' && <TicketsPage />}
+          {view === 'reminders' && <RemindersPage />}
+          <footer className="dt-footer"><span><span className="dt-footer-dot" />A little less chaos. A lot more Marvel.</span><button onClick={() => setDialog({ type: 'about' })}>An independent fan project<Icon name="upRight" size={12} /></button></footer>
+        </main>
+      </div>
+      {dialog && <TrackerDialogs />}
+      {toast && <div className="dt-toast" role="status"><span className="dt-toast-check"><Icon name="check" size={17} /></span><span>{toast}</span><button className="dt-icon-button" aria-label="Dismiss notification" onClick={dismissToast}><Icon name="close" size={16} /></button></div>}
     </div>
-    {dialog && <TrackerDialogs />}
-    {toast && <div className="dt-toast" role="status"><span className="dt-toast-check"><Icon name="check" size={17} /></span><span>{toast}</span><button className="dt-icon-button" aria-label="Dismiss notification" onClick={dismissToast}><Icon name="close" size={16} /></button></div>}
-  </div>
+  </>
 }
