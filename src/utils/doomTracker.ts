@@ -1,4 +1,5 @@
 import { articles, movies } from '../components/DoomTracker/data'
+import { themes } from './themes'
 
 export const TRACKER_STORAGE_KEY = 'doom-tracker:v1'
 
@@ -10,7 +11,8 @@ export interface TrackerReminder {
 }
 
 export interface TrackerPreferences {
-  version: 1
+  version: 2
+  theme: string
   name: string
   watchlist: string[]
   watched: string[]
@@ -21,7 +23,8 @@ export interface TrackerPreferences {
 
 export function initialTrackerPreferences(): TrackerPreferences {
   return {
-    version: 1,
+    version: 2,
+    theme: '🕷️ Spider-Man',
     name: 'True Believer',
     watchlist: ['endgame', 'loki', 'fantastic-four', 'thunderbolts'],
     watched: [],
@@ -43,7 +46,8 @@ function isKnownIds(value: unknown, known: string[]): value is string[] {
 export function isTrackerPreferences(value: unknown): value is TrackerPreferences {
   if (!isRecord(value)) return false
   const movieIds = movies.map(movie => movie.id)
-  return value.version === 1
+  return value.version === 2
+    && typeof value.theme === 'string' && themes.some(theme => theme.name === value.theme)
     && typeof value.name === 'string' && value.name.trim().length > 0 && value.name.length <= 40
     && isKnownIds(value.watchlist, movieIds)
     && isKnownIds(value.watched, movieIds)

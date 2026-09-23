@@ -31,6 +31,12 @@ function readTracker(): StoredTracker {
     }
   }
   if (!isTrackerPreferences(parsed)) {
+    if (typeof parsed === 'object' && parsed !== null && (parsed as any).version === 1) {
+      parsed = { ...parsed, version: 2, theme: initialTrackerPreferences().theme }
+      if (isTrackerPreferences(parsed)) {
+        return { preferences: parsed as TrackerPreferences, error: null, canPersist: true }
+      }
+    }
     return {
       preferences: initialTrackerPreferences(), canPersist: false,
       error: 'Your saved tracker has an unsupported format. Reset local data in your profile to save again.',

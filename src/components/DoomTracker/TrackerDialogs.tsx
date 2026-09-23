@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from 'react'
 import { useDoomTracker } from '../../contexts/DoomTrackerContext'
 import { toLocalDateTime } from '../../utils/doomTracker'
+import { themes } from '../../utils/themes'
 import { articles, characters, movies, type Article, type Character, type Movie } from './data'
 import { Artwork } from './Artwork'
 import { CharacterEmblem, Icon, type IconName } from './Icon'
@@ -210,6 +211,26 @@ function AboutDialog() {
   </DialogShell>
 }
 
+function ThemeDialog() {
+  const { preferences, setTheme, closeDialog } = useDoomTracker()
+  return <DialogShell title="Choose your colors.">
+    <div className="dt-theme-grid">
+      {themes.map(theme => {
+        const isActive = preferences.theme === theme.name
+        return <button key={theme.name} className={`dt-theme-card${isActive ? ' is-active' : ''}`} onClick={() => { setTheme(theme.name); closeDialog() }} style={{ background: theme.background, color: theme.headingText, borderColor: isActive ? theme.primary : undefined }}>
+          <div className="dt-theme-swatches">
+            <span style={{ background: theme.primary }} />
+            <span style={{ background: theme.secondary }} />
+            <span style={{ background: theme.accent }} />
+          </div>
+          <strong>{theme.name}</strong>
+          {isActive && <Icon name="check" size={16} className="dt-theme-check" />}
+        </button>
+      })}
+    </div>
+  </DialogShell>
+}
+
 export function TrackerDialogs() {
   const { dialog } = useDoomTracker()
   if (!dialog) return null
@@ -232,5 +253,6 @@ export function TrackerDialogs() {
   if (dialog.type === 'catalog') return <CatalogDialog />
   if (dialog.type === 'search') return <SearchDialog />
   if (dialog.type === 'profile') return <ProfileDialog />
+  if (dialog.type === 'theme') return <ThemeDialog />
   return <AboutDialog />
 }

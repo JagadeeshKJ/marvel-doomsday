@@ -2,11 +2,12 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState, ty
 import { articles, movies, viewLabels, type TrackerView } from '../components/DoomTracker/data'
 import { useDoomTrackerState } from '../hooks/useDoomTrackerState'
 import { validateReminder } from '../utils/doomTracker'
+import { themes } from '../utils/themes'
 
 export type TrackerDialog =
   | { type: 'article' | 'movie' | 'character'; id: string }
   | { type: 'reminder'; title?: string; at?: string }
-  | { type: 'search' | 'profile' | 'about' | 'catalog' }
+  | { type: 'search' | 'profile' | 'about' | 'catalog' | 'theme' }
   | null
 
 function currentView(): TrackerView {
@@ -47,6 +48,19 @@ function useTrackerController() {
     due.forEach(item => notified.current.add(item.id))
     notify(due.length === 1 ? `Reminder: ${due[0].title}` : `${due.length} reminders are due. Visit Reminders to see them.`)
   }, [now, preferences.reminders, notify])
+
+  useEffect(() => {
+    const theme = themes.find(t => t.name === preferences.theme) || themes[0]
+    const root = document.documentElement
+    root.style.setProperty('--theme-primary', theme.primary)
+    root.style.setProperty('--theme-secondary', theme.secondary)
+    root.style.setProperty('--theme-background', theme.background)
+    root.style.setProperty('--theme-accent', theme.accent)
+    root.style.setProperty('--theme-surface', theme.surface)
+    root.style.setProperty('--theme-heading', theme.headingText)
+    root.style.setProperty('--theme-body', theme.bodyText)
+    root.style.setProperty('--theme-muted', theme.muted)
+  }, [preferences.theme])
 
   function navigate(nextView: TrackerView) {
     window.location.hash = nextView
@@ -120,6 +134,11 @@ function useTrackerController() {
     notify('Your explorer profile has been updated.')
   }
 
+  function setTheme(themeName: string) {
+    setPreferences(previous => ({ ...previous, theme: themeName }))
+    notify(`Theme updated to ${themeName}.`)
+  }
+
   function reset() {
     const success = resetTracker()
     if (success) {
@@ -132,7 +151,7 @@ function useTrackerController() {
   return {
     preferences, storageError, view, dialog, toast, now, navigate, setDialog, closeDialog, notify,
     toggleWatchlist, toggleWatched, toggleSavedArticle, toggleShield, addReminder, toggleReminder,
-    removeReminder, saveName, reset, dismissToast: () => setToast(null),
+    removeReminder, saveName, setTheme, reset, dismissToast: () => setToast(null),
   }
 }
 
